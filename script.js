@@ -3,7 +3,7 @@ const CONFIG = {
     // Update this with your actual APK file name in the repository
     apkFileName: 'pingkhor-vpn.apk',
     // Update this with your actual Telegram channel link
-    telegramChannel: 'https://t.me/pingkhor_cha/897',
+    telegramChannel: 'https://t.me/your_channel_username',
     // Download delay for UX (milliseconds)
     downloadDelay: 2000
 };
@@ -22,10 +22,12 @@ function initializePage() {
     // Set telegram link
     if (telegramLink) {
         telegramLink.href = CONFIG.telegramChannel;
+        // Ensure the link works properly
+        telegramLink.addEventListener('click', function(e) {
+            // Don't prevent default, just track the event
+            trackEvent('telegram_click');
+        });
     }
-    
-    // Add some interactive animations
-    addParticleEffect();
 }
 
 function addEventListeners() {
@@ -33,13 +35,6 @@ function addEventListeners() {
     window.downloadAPK = function() {
         startDownload();
     };
-    
-    // Telegram link analytics (optional)
-    if (telegramLink) {
-        telegramLink.addEventListener('click', function() {
-            trackEvent('telegram_click');
-        });
-    }
     
     // Add keyboard support for download
     document.addEventListener('keydown', function(e) {
@@ -180,60 +175,7 @@ function showDownloadSuccess() {
     }, 4000);
 }
 
-function addParticleEffect() {
-    // Add subtle particle effect to background
-    const particles = document.createElement('div');
-    particles.className = 'particles';
-    particles.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: -1;
-    `;
-    
-    // Create floating particles
-    for (let i = 0; i < 20; i++) {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(100, 181, 246, 0.3);
-            border-radius: 50%;
-            animation: float ${8 + Math.random() * 4}s linear infinite;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            animation-delay: ${Math.random() * 8}s;
-        `;
-        particles.appendChild(particle);
-    }
-    
-    // Add particle animation
-    const particleStyle = document.createElement('style');
-    particleStyle.textContent = `
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) scale(1);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(particleStyle);
-    document.body.appendChild(particles);
-}
+
 
 function trackEvent(eventName) {
     // Basic analytics tracking (you can integrate with Google Analytics or other services)
@@ -287,10 +229,14 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Preload critical resources
 function preloadResources() {
     // Preload the APK file for faster downloads
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.href = getDownloadUrl();
-    document.head.appendChild(link);
+    try {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = getDownloadUrl();
+        document.head.appendChild(link);
+    } catch (error) {
+        console.log('Preload not available');
+    }
 }
 
 // Initialize preloading when page is loaded
