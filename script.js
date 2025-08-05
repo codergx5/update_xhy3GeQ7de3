@@ -3,9 +3,9 @@ const CONFIG = {
     // Update this with your actual APK file name in the repository
     apkFileName: 'Pingkhor_VPN_1.0.3.apk',
     // Update this with your actual Telegram channel link
-    telegramChannel: 'https://t.me/pingkhor_cha/897', // Default example - UPDATE THIS!
+    telegramChannel: 'https://t.me/pingkhor_cha/897',
     // Download delay for UX (milliseconds)
-    downloadDelay: 1500
+    downloadDelay: 500
 };
 
 // DOM Elements
@@ -56,23 +56,20 @@ function addEventListeners() {
 }
 
 function startDownload() {
-    // Show loading overlay
-    showLoading();
-    
     // Track download attempt
     trackEvent('download_attempt');
     
-    // Simulate download preparation
+    // Show loading overlay briefly
+    showLoading();
+    
+    // Start download immediately
+    const downloadUrl = getDownloadUrl();
+    triggerDownload(downloadUrl);
+    
+    // Hide loading and show success quickly
     setTimeout(() => {
-        // Create download link and trigger download
-        const downloadUrl = getDownloadUrl();
-        triggerDownload(downloadUrl);
-        
-        // Hide loading after download starts
-        setTimeout(() => {
-            hideLoading();
-            showDownloadSuccess();
-        }, 1000);
+        hideLoading();
+        showDownloadSuccess();
     }, CONFIG.downloadDelay);
 }
 
