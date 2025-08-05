@@ -1,0 +1,60 @@
+# GitHub Pages Configuration for Pingkhor VPN Update Page
+title: "Pingkhor VPN Update"
+description: "صفحه بروزرسانی اپلیکیشن Pingkhor VPN"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+permalink: pretty
+
+# Theme
+theme: minima
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# SEO settings
+lang: fa
+author: "Pingkhor VPN Team"
+
+# Social and metadata
+url: ""  # This will be set automatically by GitHub Pages
+baseurl: "" # Leave empty for user/organization pages
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+
+# Include files
+include:
+  - _pages
+
+# Collections
+collections:
+  releases:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+      lang: "fa"
+
+# Custom variables
+vpn_name: "Pingkhor VPN"
+current_version: "1.0.0"
+release_date: "2024-01-01" 
