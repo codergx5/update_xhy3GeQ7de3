@@ -3,7 +3,7 @@ const CONFIG = {
     // Update this with your actual APK file name in the repository
     apkFileName: 'pingkhor-vpn.apk',
     // Update this with your actual Telegram channel link
-    telegramChannel: 'https://t.me/your_channel_username',
+    telegramChannel: 'https://t.me/pingkhor_cha/897',
     // Download delay for UX (milliseconds)
     downloadDelay: 2000
 };
