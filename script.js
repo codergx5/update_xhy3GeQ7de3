@@ -1,7 +1,7 @@
 // Configuration
 const CONFIG = {
     // Update this with your actual APK file name in the repository
-    apkFileName: 'pingkhor-vpn.apk',
+    apkFileName: 'Pingkhor_VPN_1.0.3.apk',
     // Update this with your actual Telegram channel link
     telegramChannel: 'https://t.me/pingkhor_cha/897', // Default example - UPDATE THIS!
     // Download delay for UX (milliseconds)
