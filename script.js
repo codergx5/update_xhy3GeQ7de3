@@ -3,7 +3,7 @@ const CONFIG = {
     // Update this with your actual APK file name in the repository
     apkFileName: 'pingkhor-vpn.apk',
     // Update this with your actual Telegram channel link
-    telegramChannel: 'https://t.me/your_channel_username',
+    telegramChannel: 'https://t.me/pingkhorvpn', // Default example - UPDATE THIS!
     // Download delay for UX (milliseconds)
     downloadDelay: 2000
 };
@@ -21,12 +21,19 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializePage() {
     // Set telegram link
     if (telegramLink) {
+        // Update the href to use the configured channel
         telegramLink.href = CONFIG.telegramChannel;
-        // Ensure the link works properly
+        
+        // Simple click handler for analytics
         telegramLink.addEventListener('click', function(e) {
-            // Don't prevent default, just track the event
+            console.log('Telegram link clicked! Going to:', this.href);
             trackEvent('telegram_click');
+            // Allow the default action (opening the link)
         });
+        
+        console.log('Telegram link initialized:', telegramLink.href);
+    } else {
+        console.error('Telegram link element not found!');
     }
 }
 
