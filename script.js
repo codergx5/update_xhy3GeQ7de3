@@ -24,11 +24,13 @@ function initializePage() {
         // Update the href to use the configured channel
         telegramLink.href = CONFIG.telegramChannel;
         
-        // Simple click handler for analytics
+        // Custom click handler to try app first, then website
         telegramLink.addEventListener('click', function(e) {
-            console.log('Telegram link clicked! Going to:', this.href);
+            e.preventDefault(); // Prevent default navigation
+            console.log('Telegram link clicked!');
             trackEvent('telegram_click');
-            // Allow the default action (opening the link)
+            
+            openTelegramApp(CONFIG.telegramChannel);
         });
         
         console.log('Telegram link initialized:', telegramLink.href);
@@ -180,6 +182,146 @@ function showDownloadSuccess() {
 }
 
 
+
+function openTelegramApp(telegramUrl) {
+    // Show brief loading message
+    showTelegramLoading();
+    
+    // Extract channel info from URL
+    const channelMatch = telegramUrl.match(/t\.me\/([^\/]+)(?:\/(\d+))?/);
+    if (!channelMatch) {
+        console.error('Invalid Telegram URL');
+        hideTelegramLoading();
+        window.open(telegramUrl, '_blank');
+        return;
+    }
+    
+    const channelName = channelMatch[1];
+    const messageId = channelMatch[2];
+    
+    // Create Telegram app deep link
+    let appUrl;
+    if (messageId) {
+        // Link to specific message
+        appUrl = `tg://resolve?domain=${channelName}&post=${messageId}`;
+    } else {
+        // Link to channel
+        appUrl = `tg://resolve?domain=${channelName}`;
+    }
+    
+    console.log('Trying to open Telegram app:', appUrl);
+    
+    // Try to open Telegram app
+    const appLink = document.createElement('a');
+    appLink.href = appUrl;
+    appLink.style.display = 'none';
+    document.body.appendChild(appLink);
+    
+    // Set up fallback timer
+    let appOpened = false;
+    const fallbackTimer = setTimeout(() => {
+        hideTelegramLoading();
+        if (!appOpened) {
+            console.log('App not available, opening website...');
+            // If app doesn't open, try website
+            window.open(telegramUrl, '_blank');
+        }
+        if (document.body.contains(appLink)) {
+            document.body.removeChild(appLink);
+        }
+    }, 1500);
+    
+    // Listen for page visibility change (indicates app opened)
+    const handleVisibilityChange = () => {
+        if (document.hidden) {
+            appOpened = true;
+            clearTimeout(fallbackTimer);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            setTimeout(() => {
+                if (document.body.contains(appLink)) {
+                    document.body.removeChild(appLink);
+                }
+            }, 100);
+        }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Listen for blur event (app opened)
+    const handleBlur = () => {
+        appOpened = true;
+        clearTimeout(fallbackTimer);
+        window.removeEventListener('blur', handleBlur);
+        setTimeout(() => {
+            if (document.body.contains(appLink)) {
+                document.body.removeChild(appLink);
+            }
+        }, 100);
+    };
+    
+    window.addEventListener('blur', handleBlur);
+    
+    // Try to click the app link
+    try {
+        appLink.click();
+    } catch (error) {
+        console.log('App link failed, trying direct navigation...');
+        try {
+            window.location.href = appUrl;
+        } catch (navError) {
+            console.log('Direct navigation failed, opening website...');
+            clearTimeout(fallbackTimer);
+            window.open(telegramUrl, '_blank');
+            if (document.body.contains(appLink)) {
+                document.body.removeChild(appLink);
+            }
+        }
+    }
+}
+
+function showTelegramLoading() {
+    // Create loading notification
+    const notification = document.createElement('div');
+    notification.id = 'telegram-loading';
+    notification.className = 'telegram-loading-notification';
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fab fa-telegram-plane fa-spin"></i>
+            <span>در حال باز کردن تلگرام...</span>
+        </div>
+    `;
+    
+    // Add notification styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #0088cc, #006699);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 136, 204, 0.4);
+        z-index: 10000;
+        font-family: 'Vazirmatn', sans-serif;
+        font-weight: 500;
+        animation: slideInRight 0.3s ease-out;
+        direction: rtl;
+    `;
+    
+    document.body.appendChild(notification);
+}
+
+function hideTelegramLoading() {
+    const notification = document.getElementById('telegram-loading');
+    if (notification) {
+        notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }
+}
 
 function trackEvent(eventName) {
     // Basic analytics tracking (you can integrate with Google Analytics or other services)
